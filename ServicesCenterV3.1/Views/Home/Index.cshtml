@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Головна";
+}
+<div class="hero">
+    <div>
+        <h1>Ласкаво просимо до Сервісного Центру</h1>
+        <p>Ваш надійний партнер в ремонті та обслуговуванні техніки</p>
+    </div>
+</div>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Наші Послуги</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm" style="background-image: url('/img/test.png'); background-size: cover; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">Ремонт Техніки</h5>
+                    <p class="card-text">Професійний ремонт побутової та офісної техніки.</p>
+                    <a href="#" class="btn btn-light">Дізнатися більше</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm" style="background-image: url('/img/test3.png'); background-size: cover; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">Обслуговування</h5>
+                    <p class="card-text">Регулярне обслуговування для підвищення продуктивності.</p>
+                    <a href="#" class="btn btn-light">Дізнатися більше</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm" style="background-image: url('/img/test2.png'); background-size: cover; color: white;">
+                <div class="card-body">
+                    <h5 class="card-title">Консультації</h5>
+                    <p class="card-text">Кваліфіковані консультації з вибору техніки.</p>
+                    <a href="#" class="btn btn-light">Дізнатися більше</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <h2 class="mt-5 text-center">Відгуки Клієнтів</h2>
+    <div id="customerReviewsCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="card text-center" style="background-color: #f7f7f7; border-radius: 10px; padding: 20px;">
+                    <div class="d-flex justify-content-center mb-3">
+                    <img src="/img/avatar.png" alt="Аватар Олени" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 10px;">
+                        <blockquote class="blockquote">
+                            <p class="mb-0" style="font-size: 1.2rem;">"Чудовий сервіс! Швидкий та якісний ремонт."</p>
+                        </blockquote>
+                    </div>
+                    <footer class="blockquote-footer" style="font-weight: bold; font-size: 1rem;">Олена К.</footer>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card text-center" style="background-color: #f7f7f7; border-radius: 10px; padding: 20px;">
+                    <div class="d-flex justify-content-center mb-3">
+                    <img src="/img/avatar.png" alt="Аватар Івана" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 10px;">
+                        <blockquote class="blockquote">
+                            <p class="mb-0" style="font-size: 1.2rem;">"Дуже задоволений обслуговуванням. Рекомендую!"</p>
+                        </blockquote>
+                    </div>
+                    <footer class="blockquote-footer" style="font-weight: bold; font-size: 1rem;">Іван П.</footer>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card text-center" style="background-color: #f7f7f7; border-radius: 10px; padding: 20px;">
+                    <div class="d-flex justify-content-center mb-3">
+                    <img src="/img/avatar.png" alt="Аватар Марії" class="rounded-circle" style="width: 50px; height: 50px; margin-right: 10px;">
+                        <blockquote class="blockquote">
+                            <p class="mb-0" style="font-size: 1.2rem;">"Високоякісний ремонт за доступною ціною."</p>
+                        </blockquote>
+                    </div>
+                    <footer class="blockquote-footer" style="font-weight: bold; font-size: 1rem;">Марія С.</footer>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Попередній</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#customerReviewsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Наступний</span>
+        </button>
+    </div>
+
+    <style>
+        .card {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+            .card:hover {
+                transform: scale(1.03);
+            }
+
+        .carousel-item {
+            height: auto; /* Висота автоматична, щоб вміщати вміст */
+        }
+
+        .blockquote {
+            margin: 0; /* Скидання відступів */
+        }
+
+        .hero {
+            background: url('/img/test3.png') no-repeat center center;
+            background-size: cover;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+            .hero h1 {
+                font-size: 3rem;
+                font-weight: 700;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            }
+
+            .hero p {
+                font-size: 1.5rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+    </style>
+

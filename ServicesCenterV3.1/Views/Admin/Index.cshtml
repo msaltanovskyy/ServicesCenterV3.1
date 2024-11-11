@@ -1,0 +1,311 @@
+﻿@model List<ServicesCenterV3._1.Models.UserRolesViewModel>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Користувачі";
+}
+
+<h2 class="text-primary mb-4">Керування користувачами</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <label for="roleFilter" class="form-label me-2">Фільтрувати за ролями:</label>
+        <select id="roleFilter" class="form-select d-inline-block w-auto" onchange="filterByRole()">
+            <option value="">Всі ролі</option>
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Name">@role.Name</option>
+            }
+        </select>
+    </div>
+    <div>
+        <a href="/Identity/Account/Register" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i> Додати користувача
+        </a>
+    </div>
+</div>
+
+<table class="table table-hover table-striped align-middle border shadow-sm rounded">
+    <thead class="table-dark">
+        <tr>
+            <th>Дані користувача</th>
+            <th>Ролі</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody id="userTable">
+        @foreach (var user in Model)
+        {
+            <tr class="user-row" data-user-id="@user.UserId"         
+                    data-user-name="@user.Name" 
+                    data-user-lastname="@user.Lastname" 
+                    data-user-email="@user.Email" 
+                    data-user-databith="@user.DataBith" 
+                    data-roles="@string.Join(",", user.Roles)">
+                <td class="fw-bold text-secondary">
+                    <div class="d-flex flex-column text-start">
+                        <span><strong>Ім'я:</strong> @user.Name @user.Lastname</span>
+                        <span><strong>Дата нар.:</strong> @user.DataBith.ToShortDateString()</span>
+                        <span><strong>Email:</strong> @user.Email</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex flex-wrap justify-content-center">
+                        @foreach (var role in ViewBag.Roles)
+                        {
+                            var isSelected = user.Roles.Contains(role.Name);
+                            <div class="form-check me-3 mb-2">
+                                <input type="checkbox" class="form-check-input"
+                                       id="@($"role_{user.UserId}_{role.Name}")"
+                                       checked="@isSelected"
+                                       onclick="updateUserRole('@user.UserId', '@role.Name', this.checked)" />
+                                <label class="form-check-label ms-1" for="@($"role_{user.UserId}_{role.Name}")">
+                                    <span class="badge bg-@(isSelected ? "success" : "secondary")">
+                                        @role.Name
+                                    </span>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-outline-primary btn-sm me-2" onclick="openEditUserModal(this)">
+                            <i class="bi bi-pencil-square me-1"></i>Редагування
+                        </button>
+                        <a href="#" class="btn @(user.IsLockedOut ? "btn-outline-success" : "btn-outline-danger") btn-sm toggle-lockout"
+                           style="margin-top:5px" onclick="toggleLockout('@user.UserId', this)">
+                            <span class="lock-text">@(!user.IsLockedOut ? "Блокування" : "Розблокувати")</span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Редагування користувача</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="userId" />
+
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Ім'я</label>
+                        <input type="text" class="form-control" id="userName" placeholder="Введіть ім'я" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userLastname" class="form-label">Прізвище</label>
+                        <input type="text" class="form-control" id="userLastname" placeholder="Введіть прізвище" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="userEmail" placeholder="Введіть електронну пошту" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userDataBith" class="form-label">Дата народження</label>
+                        <input type="date" class="form-control" id="userDataBith" required max="@DateTime.Now.AddYears(-18).ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="mb-3 d-flex justify-content-between">
+                        <button type="button" class="btn btn-primary" onclick="saveUser()">Зберегти</button>
+                        <button type="button" class="btn btn-secondary" onclick="$('#editUserModal').modal('hide')">Скасувати</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function updateUserRole(userId, roleName, isSelected) {
+        fetch('/Admin/UpdateUserRole', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, roleName, isSelected })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Помилка при оновленні ролі');
+                } else {
+                    alert('Роль успішно оновлена');
+                }
+            });
+    }
+
+function filterByRole() {
+    const selectedRole = document.getElementById('roleFilter').value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row');
+
+    rows.forEach(row => {
+        const userRoles = row.getAttribute('data-roles').toLowerCase();
+        row.style.display = !selectedRole || userRoles.includes(selectedRole) ? '' : 'none';
+    });
+}
+
+
+    function updateLockout(userId, lockout, button) {
+        fetch('/Admin/UpdateUserLockout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, lockout })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Помилка при оновленні блокування');
+                } else {
+                    alert(lockout ? 'Користувача заблоковано' : 'Користувача розблоковано');
+                    button.querySelector('.lock-text').innerText = lockout ? "Розблокувати" : "Блокування";
+                    button.classList.toggle('btn-outline-danger', !lockout);
+                    button.classList.toggle('btn-outline-success', lockout);
+                }
+            })
+            .catch(error => {
+                alert('Сталася помилка: ' + error);
+            });
+    }
+
+    function toggleLockout(userId, button) {
+        const isLocked = button.querySelector('.lock-text').innerText.trim() === "Розблокувати";
+        updateLockout(userId, !isLocked, button);
+    }
+
+    function openEditUserModal(button) {
+        const row = button.closest('.user-row');
+        document.getElementById('userId').value = row.getAttribute('data-user-id');
+        document.getElementById('userName').value = row.getAttribute('data-user-name');
+        document.getElementById('userLastname').value = row.getAttribute('data-user-lastname');
+        document.getElementById('userEmail').value = row.getAttribute('data-user-email');
+        document.getElementById('userDataBith').value = row.getAttribute('data-user-databith').split('T')[0];
+
+        $('#editUserModal').modal('show');
+    }
+
+    function saveUser() {
+        const userId = document.getElementById('userId').value;
+        const userName = document.getElementById('userName').value;
+        const userLastname = document.getElementById('userLastname').value;
+        const userEmail = document.getElementById('userEmail').value;
+        const userDataBith = document.getElementById('userDataBith').value;
+
+        fetch('/Admin/EditUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, userName, userLastname, userEmail, userDataBith })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert('Помилка при збереженні даних користувача');
+                } else {
+                    alert('Дані користувача успішно оновлено');
+                    $('#editUserModal').modal('hide');
+                    location.reload(); // Обновите страницу, чтобы увидеть изменения
+                }
+            })
+            .catch(error => {
+                alert('Сталася помилка: ' + error);
+            });
+    }
+</script>
+
+<style>
+
+    .modal-content {
+        border: 1px solid #e0e0e0; /* Легка рамка */
+        background-color: #f8f9fa; /* Світло-сірий фон */
+    }
+
+    .modal-header {
+        background-color: #007bff; /* Синій фон заголовка */
+        color: white; /* Білий текст заголовка */
+    }
+
+    .modal-body {
+        font-size: 1.1rem; /* Трошки більший шрифт */
+    }
+
+    .btn-primary {
+        background-color: #0069d9; /* Темніший синій */
+        border: none; /* Без обводки */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d; /* Сірий фон */
+        border: none; /* Без обводки */
+    }
+
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f5f9;
+    }
+
+    .table {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+            padding: 1rem;
+        }
+
+    .badge {
+        font-size: 0.85em;
+    }
+
+    .form-check-label {
+        font-size: 0.9em;
+    }
+
+    .btn-outline-primary {
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    .btn-success {
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+        .btn-success:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+    .fw-bold {
+        font-weight: 500;
+    }
+
+    .text-start {
+        text-align: left;
+    }
+</style>

@@ -1,0 +1,252 @@
+﻿@model ServicesCenterV3._1.Models.TechnicOrderViewModel
+
+@{
+    ViewData["Title"] = "Список техніки та замовлень";
+}
+
+<!-- Заголовок сторінки -->
+<div class="text-center my-4">
+    <h2>@ViewData["Title"]</h2>
+</div>
+
+<!-- Кнопка для відкриття форми додавання техніки -->
+<div class="text-center mb-4">
+    <button class="btn btn-success" onclick="toggleForm('technicForm')">Додати техніку</button>
+    <button class="btn btn-info" onclick="toggleForm('orderForm')">Створити замовлення</button>
+</div>
+
+<!-- Форма для додавання техніки (прихована за замовчуванням) -->
+<div class="card shadow-sm mb-4" id="technicForm" style="display: none;">
+    <div class="card-header bg-warning text-white">
+        <h5 class="mb-0">Додати техніку</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddTechnic" method="post">
+            <div class="form-group mb-3">
+                <label for="NameTechnic">Назва техніки</label>
+                <input type="text" id="NameTechnic" name="NameTechnic" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="TechnicType">Тип техніки</label>
+                <select id="TechnicType" name="TechnicType" class="form-control" required>
+                    <option value="" disabled selected>Оберіть тип техніки</option>
+                    @foreach (var type in Model.typeTechnics)
+                    {
+                        <option value="@type.Type">@type.Type</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Cost">Вартість</label>
+                <input type="number" id="Cost" name="Cost" class="form-control" required min="1" />
+            </div>
+            <button type="submit" class="btn btn-primary">Додати техніку</button>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4" id="orderForm" style="display: none;">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Створити замовлення</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="CreateOrder" method="post">
+            <div class="form-group mb-3">
+                <label for="TechnicId">Вибір техніки</label>
+                <select id="TechnicId" name="technicId" class="form-control" required>
+                    <option value="" disabled selected>Оберіть техніку</option>
+                    @foreach (var technic in Model.Technics)
+                    {
+                        <option value="@technic.NameTechnic">@technic.NameTechnic</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Reason">Причина</label>
+                <textarea id="Reason" name="reason" class="form-control" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="DateEnd">Дата завершення</label>
+                <input type="date" id="DateEnd" name="dateEnd" class="form-control" required />
+            </div>
+             <div class="form-group mb-3">
+                <label for="DateCreate">Дата початку</label>
+                <input type="date" id="dataCreate" name="dataCreate" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+                <label for="MasterId">Майстер</label>
+                <select id="MasterId" name="masterId" class="form-control" required>
+                    <option value="" disabled selected>Оберіть майстра</option>
+                    @foreach (var m in Model.Master)
+                    {
+                        <option value="@m.Id">@m.UserName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label for="ClientId">Клієнт</label>
+                <select id="ClientId" name="clientId" class="form-control" required>
+                    <option value="" disabled selected>Оберіть клієнта</option>
+                    @foreach (var c in Model.Client)
+                    {
+                        <option value="@c.Id">@c.UserName</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Створити замовлення</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Секція для техніки -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Список техніки</h5>
+        <button class="btn btn-light" onclick="toggleTable('technicTable')">
+            <i class="fas fa-chevron-up" id="technicToggleIcon"></i>
+        </button>
+    </div>
+    <div class="card-body" id="technicTable">
+        <table class="table table-striped table-hover table-responsive">
+            <thead class="table-dark">
+                <tr>
+                    <th>Назва техніки</th>
+                    <th>Тип техніки</th>
+                    <th>Вартість</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var technic in Model.Technics)
+                {
+                    <tr>
+                        <td>@technic.NameTechnic</td>
+                        <td>@technic.TechnicType</td>
+                        <td>@technic.typeTechnic?.Cost</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Секція для замовлень -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Список замовлень</h5>
+        <button class="btn btn-light" onclick="toggleTable('orderTable')">
+            <i class="fas fa-chevron-up" id="orderToggleIcon"></i>
+        </button>
+    </div>
+    <div class="card-body" id="orderTable">
+        <!-- Форма для пошуку по номеру замовлення -->
+        <form method="get" asp-action="Index">
+            <div class="form-group mb-3">
+                <input type="text" class="form-control" name="searchOrderId" placeholder="Пошук по номеру замовлення" />
+            </div>
+            <button type="submit" class="btn btn-primary">Пошук</button>
+        </form>
+
+        <table class="table table-striped table-hover table-responsive mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Номер замовлення</th>
+                    <th>Назва техніки</th>
+                    <th>Причина</th>
+                    <th>Дата створення</th>
+                    <th>Дата закінчення</th>
+                    <th>Статус</th>
+                    <th>Майстер</th>
+                    <th>Клієнт</th>
+                    <th>Ціна</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.NameTecnic</td>
+                        <td>@order.Reasons</td>
+                        <td>@order.DateCreate.ToString("yyyy-MM-dd")</td>
+                        <td>@order.DateEnd.ToString("yyyy-MM-dd")</td>
+                        <td>@order.Status</td>
+                        <td>@order.UserMaster?.UserName</td>
+                        <td>@order.UserClient?.UserName</td>
+                        <td>@order.Invoice.InvoicePrice</td>
+                        <td class="btn-group">
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Керування
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="#">Чек</a></li>
+                                    <li><a class="dropdown-item" href="#">Передати майстру</a></li>
+                                    <li><a class="dropdown-item" href="#">Відати замовлення</a></li>
+                                    <li><a class="dropdown-item" href="#">Відмінити замовлення</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Для іконок -->
+    <script>
+        // Функція для показу/приховання форми
+        function toggleForm(formId) {
+            var form = document.getElementById(formId);
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+        // Функція для переключення видимості таблиці
+        function toggleTable(tableId) {
+            var table = document.getElementById(tableId);
+            var icon = document.getElementById(tableId + 'ToggleIcon');
+
+            if (table.style.display === "none") {
+                table.style.display = "block";
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                table.style.display = "none";
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+
+
+        function searchOrders() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchOrderId");
+            filter = input.value.toLowerCase();
+            table = document.getElementById("orderTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 1; i < tr.length; i++) { // Починаємо з 1, бо перший рядок це заголовки
+                td = tr[i].getElementsByTagName("td")[0]; // Номер замовлення в першій колонці
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+}

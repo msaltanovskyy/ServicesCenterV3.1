@@ -1,0 +1,94 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<ul class="navbar-nav ms-auto">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-light" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Привіт, @User.Identity?.Name!
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Профіль</a>
+                </li>
+                <li>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="dropdown-item">Вихід</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Реєстрація</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Вхід</a>
+        </li>
+    }
+</ul>
+
+<style>
+    /* Навігаційна панель */
+    .navbar {
+        background: linear-gradient(90deg, #0056b3, #0096d6);
+        padding: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Посилання навігації */
+    .nav-link {
+        transition: color 0.3s ease, transform 0.3s ease;
+        font-weight: 500;
+        font-size: 1.1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+    }
+
+        .nav-link:hover {
+            color: #ffca28;
+            transform: scale(1.05);
+        }
+
+    /* Випадаюче меню */
+    .dropdown-menu {
+        background-color: #ffffff;
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-item {
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        border-radius: 4px;
+    }
+
+        .dropdown-item:hover {
+            background-color: #0056b3;
+            color: #ffffff;
+        }
+
+    /* Анімація для dropdown */
+    .dropdown-menu.show {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .dropdown-menu {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    /* Текст привітання */
+    #navbarDropdown {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+</style>

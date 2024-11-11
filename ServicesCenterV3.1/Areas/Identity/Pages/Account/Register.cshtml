@@ -1,0 +1,130 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Реєстрація";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="p-4 border rounded shadow-sm bg-white" onsubmit="return validateAge()">
+            <h2 class="text-center mb-4">Створити новий обліковий запис</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Name" class="form-control" autocomplete="name" aria-required="true" placeholder="Name" />
+                <label asp-for="Input.Name" class="form-label">Імя</label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div>            
+            
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Lastname" class="form-control" autocomplete="lastname" aria-required="true" placeholder="Lastname" />
+                <label asp-for="Input.Lastname" class="form-label">Прізвище</label>
+                <span asp-validation-for="Input.Lastname" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DataBith" type="date" id="dateOfBirth" class="form-control" aria-required="true" />
+                <label asp-for="Input.DataBith" class="form-label">Дата народження</label>
+                <span asp-validation-for="Input.DataBith" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email" class="form-label">Електронна пошта</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Пароль" />
+                <label asp-for="Input.Password" class="form-label">Пароль</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Підтвердіть пароль" />
+                <label asp-for="Input.ConfirmPassword" class="form-label">Підтвердження пароля</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <label asp-for="Input.Role" class="control-label"></label>
+            <div class="form-floating mb-3">
+                <select asp-for="Input.Role" class="form-control" asp-items="@(new SelectList(Model.Roles))"></select>
+                <span asp-validation-for="Input.Role" class="text-danger"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Зареєструватися</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    body {
+        background-color: #f4f4f4;
+    }
+
+    h1, h2 {
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .border {
+        border: 1px solid #dee2e6;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+    }
+
+    .bg-white {
+        background-color: #ffffff !important;
+    }
+
+    .form-floating .form-control {
+        border-radius: 0.5rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, .25);
+    }
+
+    .btn-primary {
+        background-color: #0056b3;
+        border: none;
+        transition: background-color 0.3s ease;
+        border-radius: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+    }
+</style>
+<script>
+    function validateAge() {
+        const dateOfBirth = document.getElementById('dateOfBirth').value;
+        const birthDate = new Date(dateOfBirth);
+        const today = new Date();
+
+        // Розраховуємо вік
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+
+        // Перевірка, чи користувачу виповнилось 18 років
+        if (age < 18 || (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)))) {
+            alert("Вам повинно бути не менше 18 років для реєстрації.");
+            return false; // Перериваємо відправку форми
+        }
+
+        return true; // Дозволяємо відправку форми
+    }
+</script>

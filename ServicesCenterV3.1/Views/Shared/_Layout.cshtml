@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Сервісний Центр</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ServicesCenterV3._1.styles.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(90deg, #007bff 0%, #00aaff 100%);
+        }
+
+        .navbar-brand, .nav-link {
+            color: #ffffff;
+            transition: color 0.3s;
+        }
+
+            .nav-link:hover {
+                color: #ffc107;
+            }
+
+        .footer {
+            background: linear-gradient(90deg, #343a40 0%, #495057 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+            .footer a {
+                color: #f8f9fa;
+                transition: color 0.3s;
+            }
+
+                .footer a:hover {
+                    color: #ffc107;
+                }
+
+ 
+
+        .service-card {
+            transition: transform 0.3s;
+        }
+
+            .service-card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            }
+
+        .nav-item .collapse {
+            padding-left: 20px; /* Відступи для підменю */
+        }
+
+        .nav-item .nav-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Сервісний Центр</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Панель адміністрування</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" class="dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#managerPanelMenu" aria-expanded="false" aria-controls="managerPanelMenu">Панель менеджера</a>
+                            <ul class="nav flex-column collapse" id="managerPanelMenu">
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="TechnicOrder" asp-action="Index">Керування технікою та замовленнями</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Manager" asp-action="Index">Керування клієнтами</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="TechnicOrder" asp-action="Details">Керування складом</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Панель майстра</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Мої замовлення</a>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer text-muted">
+        <div class="container">
+            &copy; 2024 - Сервісний Центр -
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Політика конфіденційності</a>
+            <div class="mt-2">
+                <strong>Контактна інформація:</strong><br>
+                Телефон: <a href="tel:+380XXXXXXXXX">+38 (0XX) XXX-XX-XX</a><br>
+                Email: <a href="mailto:info@servicescenter.com">info@servicescenter.com</a><br>
+                Адреса: вул. Прикладів, 1, Київ, Україна
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
