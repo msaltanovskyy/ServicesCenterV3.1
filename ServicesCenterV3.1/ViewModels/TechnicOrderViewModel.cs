@@ -17,5 +17,7 @@
         // Список майстрів для вибору
         public IEnumerable<User> Master { get; set; }
 
+        public IEnumerable<Spare> Spares { get; set; }
+
     }
 }

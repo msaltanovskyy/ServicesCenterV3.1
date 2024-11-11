@@ -16,7 +16,9 @@ namespace ServicesCenterV3._1.Models
         [Column("order_id")]
         [Display(Name = "Номер замовлення")]
         public int OrderId { get; set; }    
-        public Order order { get; set; }    
+        public Order order { get; set; }
+
+        public ICollection<SpareInvoice> SpareInvoices { get; set; }
 
     }
 }

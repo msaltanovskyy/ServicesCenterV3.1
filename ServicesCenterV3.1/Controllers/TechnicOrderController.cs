@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServicesCenterV3._1.Data;
 using ServicesCenterV3._1.Models;
+using ServicesCenterV3._1.ViewModels;
 using System.Linq;
 
 namespace ServicesCenterV3._1.Controllers
@@ -22,6 +23,24 @@ namespace ServicesCenterV3._1.Controllers
         // Сторінка для перегляду списку техніки та замовлень
         public IActionResult Index(string searchOrderId)
         {
+            // Збір даних для діаграм
+            var orderStats = _context.Orders
+                .GroupBy(o => o.Status)
+                .Select(group => new {
+                    Status = group.Key,
+                    Count = group.Count()
+                }).ToList();
+
+            var technicStats = _context.Orders
+                .GroupBy(o => o.NameTecnic)
+                .Select(group => new {
+                    TechnicName = group.Key,
+                    Count = group.Count()
+                }).ToList();
+
+            // Передати дані в представлення
+            ViewBag.OrderStats = orderStats;
+            ViewBag.TecnicStats = technicStats;
 
             var masterRoleId = _roleManager.Roles.FirstOrDefault(r => r.Name == "Master")?.Id;
             var master = _context.Users
@@ -50,6 +69,7 @@ namespace ServicesCenterV3._1.Controllers
             // Отримуємо всі техніки, типи технік, майстрів та клієнтів
             var technics = _context.Technics.Include(t => t.typeTechnic).ToList();
             var typeTechnics = _context.TypeTechnics.ToList();
+            var spares = _context.spares.ToList();
  
 
             // Фільтруємо замовлення по номеру, якщо пошуковий параметр не порожній
@@ -70,7 +90,8 @@ namespace ServicesCenterV3._1.Controllers
                 Orders = orders,
                 typeTechnics = typeTechnics,
                 Master = master,
-                Client = client
+                Client = client,
+                Spares = spares,
             };
 
             return View(model);
@@ -186,18 +207,81 @@ namespace ServicesCenterV3._1.Controllers
             return View("Index");
         }
 
-        [HttpGet]
-        public IActionResult OpenCheck(int id)
+
+        public async Task<IActionResult> Details(int id)
         {
+            var invoice = await _context.invoices
+                .Include(i => i.order) // Включаем заказ
+                .Include(i => i.SpareInvoices) // Включаем данные из таблицы SpareInvoice
+                    .ThenInclude(si => si.spare) // Включаем данные о запчастях
+                .FirstOrDefaultAsync(i => i.InvoiceId == id);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new InvoiceDetailsViewModel
+            {
+                Invoice = invoice,
+                Order = invoice.order,
+                Spares = invoice.SpareInvoices
+                    .Where(si => si.SapreId != null)
+                    .Select(si => si.spare)
+                    .ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        public IActionResult AddSpare(string spareName, double spareCost, int spareValue)
+        {
+            if (ModelState.IsValid)
+            {
+                var spare = new Spare
+                {
+                    SpareName = spareName,
+                    SpareCost = spareCost,
+                    SpareValue = spareValue,
+                };
+
+                _context.spares.Add(spare);
+                _context.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
+            }
+
             return View();
+        }
+
+        public IActionResult EditStatusCancel(int orderId)
+        {
+            var order = _context.Orders.Find(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            order.Status = "Відмінено"; // Змінюємо статус на "Відмінити замовлення"
+            _context.SaveChanges();
+
+            return RedirectToAction("Index"); // Повертаємо на сторінку зі списком замовлень
         }
 
         [HttpPost]
-        public IActionResult OpenChek()
+        public IActionResult EditStatusReady(int orderId)
         {
-            return View();
-        }
+            var order = _context.Orders.Find(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
 
+            order.Status = "Готово"; // Змінюємо статус на "Відати замовлення"
+            _context.SaveChanges();
+
+            return RedirectToAction("Index"); // Повертаємо на сторінку зі списком замовлень
+        }
 
     }
 

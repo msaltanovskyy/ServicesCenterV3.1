@@ -89,25 +89,13 @@
                             <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Панель адміністрування</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" class="dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#managerPanelMenu" aria-expanded="false" aria-controls="managerPanelMenu">Панель менеджера</a>
-                            <ul class="nav flex-column collapse" id="managerPanelMenu">
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="TechnicOrder" asp-action="Index">Керування технікою та замовленнями</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Manager" asp-action="Index">Керування клієнтами</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="TechnicOrder" asp-action="Details">Керування складом</a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Панель майстра</a>
+                            <a class="nav-link" asp-area="" asp-controller="TechnicOrder" asp-action="Index">Панель менеджера</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">Мої замовлення</a>
+                            <a class="nav-link" asp-area="" asp-controller="Master" asp-action="Index">Панель майстра</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Client" asp-action="Index">Мої замовлення</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
