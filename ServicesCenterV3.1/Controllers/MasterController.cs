@@ -7,7 +7,7 @@ using ServicesCenterV3._1.Models;
 
 namespace ServicesCenterV3._1.Controllers
 {
-    [Authorize(Roles = "Master")]
+    //[Authorize(Roles = "Master")]
     public class MasterController : Controller
     {
         private readonly ApplicationDbContext _context;

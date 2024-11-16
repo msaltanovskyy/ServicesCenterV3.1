@@ -7,7 +7,7 @@ using ServicesCenterV3._1.Models;
 
 namespace ServicesCenterV3._1.Controllers
 {
-    [Authorize(Roles = "Client")]
+    //[Authorize(Roles = "Client")]
     public class ClientController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,7 +52,7 @@ namespace ServicesCenterV3._1.Controllers
 
 
             // Фільтруємо замовлення по номеру, якщо пошуковий параметр не порожній
-            var ordersQuery = _context.Orders.Include(i => i.Invoice).AsQueryable();
+            var ordersQuery = _context.Orders.Include(i => i.Invoice).Include(r => r.review).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchOrderId))
             {

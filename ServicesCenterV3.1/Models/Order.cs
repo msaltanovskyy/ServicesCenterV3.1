@@ -63,7 +63,11 @@ namespace ServicesCenterV3._1.Models
         public int ?InvoiceId { get; set; }
 
         [ForeignKey("InvoiceId")]
-        public Invoice Invoice { get; set; }    
+        public Invoice Invoice { get; set; }
+
+        [Column("review_id")]
+        public int ?ReviewId { get; set; }
+        public Review review { get; set; }
 
 
     }

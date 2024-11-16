@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace ServicesCenterV3._1.Controllers
 {
-    [Authorize(Roles = "Manager")]
+    //[Authorize(Roles = "Manager")]
     public class TechnicOrderController : Controller
     {
         private readonly ApplicationDbContext _context;

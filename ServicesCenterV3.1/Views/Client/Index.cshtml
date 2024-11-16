@@ -9,60 +9,34 @@
     <h2>@ViewData["Title"]</h2>
 </div>
 
-<div class="card shadow-sm mb-4" id="orderForm" style="display: none;">
-    <div class="card-header bg-success text-white">
-        <h5 class="mb-0">Створити замовлення</h5>
+<div class="card mt-4 shadow-sm" id="reviewForm" style="display: none;">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Додати відгук</h5>
     </div>
     <div class="card-body">
-        <form asp-action="CreateOrder" method="post">
+        <form asp-controller="Review" asp-action="ReviewCreate" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="OrderIdHidden" name="orderId" />
             <div class="form-group mb-3">
-                <label for="TechnicId">Вибір техніки</label>
-                <select id="TechnicId" name="technicId" class="form-control" required>
-                    <option value="" disabled selected>Оберіть техніку</option>
-                    @foreach (var technic in Model.Technics)
-                    {
-                        <option value="@technic.NameTechnic">@technic.NameTechnic</option>
-                    }
+                <label for="Comment">Коментар</label>
+                <textarea id="Comment" name="text" class="form-control" required></textarea>
+            </div>
+            <div class="form-group mb-3">
+                <label for="Rating">Рейтинг</label>
+                <select id="Rating" name="rating" class="form-control" required>
+                    <option value="" disabled selected>Оберіть рейтинг</option>
+                    <option value="1">1 - Погано</option>
+                    <option value="2">2 - Задовільно</option>
+                    <option value="3">3 - Нормально</option>
+                    <option value="4">4 - Добре</option>
+                    <option value="5">5 - Відмінно</option>
                 </select>
             </div>
-            <div class="form-group mb-3">
-                <label for="Reason">Причина</label>
-                <textarea id="Reason" name="reason" class="form-control" required></textarea>
-            </div>
-            <div class="form-group mb-3">
-                <label for="DateEnd">Дата завершення</label>
-                <input type="date" id="DateEnd" name="dateEnd" class="form-control" required />
-            </div>
-            <div class="form-group mb-3">
-                <label for="DateCreate">Дата початку</label>
-                <input type="date" id="dataCreate" name="dataCreate" class="form-control" required />
-            </div>
-            <div class="form-group mb-3">
-                <label for="MasterId">Майстер</label>
-                <select id="MasterId" name="masterId" class="form-control" required>
-                    <option value="" disabled selected>Оберіть майстра</option>
-                    @foreach (var m in Model.Master)
-                    {
-                        <option value="@m.Id">@m.UserName</option>
-                    }
-                </select>
-            </div>
-            <div class="form-group mb-3">
-                <label for="ClientId">Клієнт</label>
-                <select id="ClientId" name="clientId" class="form-control" required>
-                    <option value="" disabled selected>Оберіть клієнта</option>
-                    @foreach (var c in Model.Client)
-                    {
-                        <option value="@c.Id">@c.UserName</option>
-                    }
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Створити замовлення</button>
+            <button type="submit" class="btn btn-primary">Додати відгук</button>
+            <button type="button" class="btn btn-secondary" onclick="hideReviewForm()">Скасувати</button>
         </form>
     </div>
 </div>
-
-
 
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
@@ -92,6 +66,7 @@
                     <th>Майстер</th>
                     <th>Клієнт</th>
                     <th>Ціна</th>
+                    <th>Коментарь та оцінка</th>
                     <th></th>
                 </tr>
             </thead>
@@ -108,6 +83,17 @@
                         <td>@order.UserMaster?.UserName</td>
                         <td>@order.UserClient?.UserName</td>
                         <td>@order.Invoice.InvoicePrice</td>
+                         <td>
+                            @if (order.ReviewId != 0)
+                            {
+                                <span>Коментарь: @order.review.Text</span>
+                                <span>Оцінка @order.review.Rating</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Коментар відсутній</span>
+                            }
+                        </td>
                         <td class="btn-group">
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -115,6 +101,10 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" asp-controller="TechnicOrder" asp-action="Details" asp-route-id="@order.OrderId">Чек</a></li>
+                                    @if (order.Status == "Видано" && order.ReviewId == 0)
+                                    {
+                                        <li><a class="dropdown-item" onclick="showReviewForm(@order.OrderId)" >Залишити відгук</a></li>
+                                    }
                                 </ul>
                             </div>
                         </td>
@@ -175,5 +165,17 @@
                 }
             }
         }
+
+                // Показати форму відгуку
+        function showReviewForm(orderId) {
+            document.getElementById("OrderIdHidden").value = orderId;
+            document.getElementById("reviewForm").style.display = "block";
+        }
+
+        // Сховати форму відгуку
+        function hideReviewForm() {
+            document.getElementById("reviewForm").style.display = "none";
+        }
+
     </script>
 }
