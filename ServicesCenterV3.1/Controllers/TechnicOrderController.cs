@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServicesCenterV3._1.Data;
@@ -8,6 +9,7 @@ using System.Linq;
 
 namespace ServicesCenterV3._1.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class TechnicOrderController : Controller
     {
         private readonly ApplicationDbContext _context;

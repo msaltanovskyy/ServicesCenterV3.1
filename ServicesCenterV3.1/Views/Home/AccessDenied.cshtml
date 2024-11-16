@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Доступ заборонено";
+}
+
+<div class="access-denied-container">
+    <div class="access-denied-content">
+        <h1>403</h1>
+        <h2>Доступ заборонено</h2>
+        <p>На жаль, у вас немає прав для перегляду цієї сторінки.</p>
+        <a asp-action="Index" asp-controller="Home" class="btn btn-primary btn-lg">На головну</a>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #ff4e50, #f9d423);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .access-denied-container {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .access-denied-content h1 {
+        font-size: 8rem;
+        font-weight: bold;
+        margin: 0;
+        color: #ff6f61;
+        text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .access-denied-content h2 {
+        font-size: 2.5rem;
+        margin: 20px 0;
+        color: #f9d423;
+    }
+
+    .access-denied-content p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        color: #ddd;
+    }
+
+    .btn-primary {
+        background-color: #ff6f61;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #e64c3c;
+    }
+</style>

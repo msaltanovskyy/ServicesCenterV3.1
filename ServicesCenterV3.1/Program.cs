@@ -20,6 +20,11 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Home/AccessDenied";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

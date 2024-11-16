@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServicesCenterV3._1.Data;
@@ -6,6 +7,7 @@ using ServicesCenterV3._1.Models;
 
 namespace ServicesCenterV3._1.Controllers
 {
+    [Authorize(Roles = "Master")]
     public class MasterController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -64,7 +66,7 @@ namespace ServicesCenterV3._1.Controllers
             var model = new TechnicOrderViewModel
             {
                 Technics = technics,
-                Orders = orders.Where(o=> o.Status != "Видано"),
+                Orders = orders.Where(o=> o.Status != "Видано" && o.Status != "Відмінено"),
                 typeTechnics = typeTechnics,
                 Master = master,
                 Client = client,
