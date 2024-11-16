@@ -31,16 +31,42 @@ namespace ServicesCenterV3._1.Controllers
                     Count = group.Count()
                 }).ToList();
 
-            var technicStats = _context.Orders
-                .GroupBy(o => o.NameTecnic)
+            var technicTypeStats = _context.Technics
+                .GroupBy(t => t.TechnicType)
                 .Select(group => new {
-                    TechnicName = group.Key,
+                    TechnicType = group.Key,
                     Count = group.Count()
                 }).ToList();
 
+            var sparePartStats = _context.spares
+                    .GroupBy(s => s.SpareName)
+                    .Select(group => new {
+                    SpareName = group.Key,
+                    Count = group.Sum(s => s.SpareValue) // Сума кількості запчастин
+                    }).ToList();
+
+            var masterStats = _context.Orders
+                .GroupBy(o => o.UserMaster.UserName)
+                .Select(group => new {
+                    MasterName = group.Key,
+                     Count = group.Count()
+                 }).ToList();
+
+            var clientStats = _context.Orders
+            .GroupBy(o => o.UserClient.UserName)
+                .Select(group => new {
+                 ClientName = group.Key,
+                 Count = group.Count()
+                 }).ToList();
+
+            ViewBag.ClientStats = clientStats;
+
+            ViewBag.MasterStats = masterStats;
+
             // Передати дані в представлення
             ViewBag.OrderStats = orderStats;
-            ViewBag.TecnicStats = technicStats;
+            ViewBag.TechnicTypeStats = technicTypeStats;
+            ViewBag.SparePartStats = sparePartStats;
 
             var masterRoleId = _roleManager.Roles.FirstOrDefault(r => r.Name == "Master")?.Id;
             var master = _context.Users
@@ -184,7 +210,7 @@ namespace ServicesCenterV3._1.Controllers
                         var spareInvoice = new SpareInvoice
                         {
                             InvoiceId = invoice.InvoiceId,
-                            SapreId = null
+                            SpareId = null
                         };
 
                         _context.spareInvoices.Add(spareInvoice);
@@ -213,7 +239,7 @@ namespace ServicesCenterV3._1.Controllers
             var invoice = await _context.invoices
                 .Include(i => i.order) // Включаем заказ
                 .Include(i => i.SpareInvoices) // Включаем данные из таблицы SpareInvoice
-                    .ThenInclude(si => si.spare) // Включаем данные о запчастях
+                    .ThenInclude(si => si.Spare) // Включаем данные о запчастях
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
 
             if (invoice == null)
@@ -226,8 +252,8 @@ namespace ServicesCenterV3._1.Controllers
                 Invoice = invoice,
                 Order = invoice.order,
                 Spares = invoice.SpareInvoices
-                    .Where(si => si.SapreId != null)
-                    .Select(si => si.spare)
+                    .Where(si => si.SpareId != null)
+                    .Select(si => si.Spare)
                     .ToList()
             };
 
@@ -254,6 +280,7 @@ namespace ServicesCenterV3._1.Controllers
             return View();
         }
 
+        [HttpPost]
         public IActionResult EditStatusCancel(int orderId)
         {
             var order = _context.Orders.Find(orderId);
@@ -277,7 +304,7 @@ namespace ServicesCenterV3._1.Controllers
                 return NotFound();
             }
 
-            order.Status = "Готово"; // Змінюємо статус на "Відати замовлення"
+            order.Status = "Видано"; // Змінюємо статус на "Відати замовлення"
             _context.SaveChanges();
 
             return RedirectToAction("Index"); // Повертаємо на сторінку зі списком замовлень

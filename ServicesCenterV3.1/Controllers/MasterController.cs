@@ -64,14 +64,85 @@ namespace ServicesCenterV3._1.Controllers
             var model = new TechnicOrderViewModel
             {
                 Technics = technics,
-                Orders = orders,
+                Orders = orders.Where(o=> o.Status != "Видано"),
                 typeTechnics = typeTechnics,
                 Master = master,
-                Client = client
+                Client = client,
+                Spares = _context.spares.ToList()
             };
 
             return View(model);
         }
+
+        [HttpPost("EditNextReady/{id}")]
+        public IActionResult EditNextReady(int id)
+        {
+            var order = _context.Orders.Find(id);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            order.Status = "Готово до видачі"; // Змінюємо статус на "Відати замовлення"
+            _context.SaveChanges();
+
+            return RedirectToAction("Index","Master"); // Повертаємо на сторінку зі списком замовлень
+        }
+
+        [HttpPost]
+        public IActionResult AddSpare(int orderId, List<int> selectedSpareIds)
+        {
+            if (selectedSpareIds == null || !selectedSpareIds.Any())
+            {
+                return BadRequest("Не вибрано жодної запчастини.");
+            }
+
+            // Отримуємо замовлення разом з чеком і специфікацією запасних частин
+            var order = _context.Orders
+                                .Include(o => o.Invoice)
+                                .ThenInclude(i => i.SpareInvoices)
+                                .FirstOrDefault(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                return NotFound("Замовлення не знайдено.");
+            }
+
+            // Перевіряємо, чи є у замовлення чек, якщо ні, створюємо новий
+            if (order.Invoice == null)
+            {
+                order.Invoice = new Invoice { OrderId = orderId, InvoicePrice = 0 };
+                _context.invoices.Add(order.Invoice);
+                _context.SaveChanges();
+            }
+
+            // Додаємо запасні частини до чека та оновлюємо загальну ціну
+            double totalSpareCost = 0;
+
+            foreach (var spareId in selectedSpareIds)
+            {
+                var spare = _context.spares.Find(spareId);
+                if (spare == null) continue;
+
+                var spareInvoice = new SpareInvoice
+                {
+                    InvoiceId = order.Invoice.InvoiceId,
+                    SpareId = spareId
+                };
+
+                _context.spareInvoices.Add(spareInvoice);
+                totalSpareCost += spare.SpareCost;
+            }
+
+            // Оновлюємо загальну ціну в чеку
+            order.Invoice.InvoicePrice += totalSpareCost;
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
+        }
+
+
+
 
     }
 }

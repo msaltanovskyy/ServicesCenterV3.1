@@ -17,7 +17,11 @@
         // Список майстрів для вибору
         public IEnumerable<User> Master { get; set; }
 
+        public Spare NewSpare { get; set; } = new Spare();
         public IEnumerable<Spare> Spares { get; set; }
+
+        public List<int> SelectedSpareIds { get; set; } = new List<int>();
+        public int OrderId { get; set; }
 
     }
 }

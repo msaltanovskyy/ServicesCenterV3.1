@@ -4,7 +4,6 @@
     ViewData["Title"] = "Панель майстра";
 }
 
-<!-- Заголовок сторінки -->
 <div class="text-center my-4">
     <h2>@ViewData["Title"]</h2>
 </div>
@@ -17,7 +16,6 @@
         </button>
     </div>
     <div class="card-body" id="orderTable">
-        <!-- Форма для пошуку по номеру замовлення -->
         <form method="get" asp-action="Index">
             <div class="form-group mb-3">
                 <input type="text" class="form-control" name="searchOrderId" placeholder="Пошук по номеру замовлення" />
@@ -59,38 +57,96 @@
                                     Дії
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" asp-controller="TechnicOrder" asp-action="Details" asp-route-id="@order.OrderId">Прийняти замовлення</a></li>
-                                    <li><a class="dropdown-item" asp-controller="TechnicOrder" asp-action="Details" asp-route-id="@order.OrderId">Додати деталі</a></li>
-                                    <li><a class="dropdown-item" asp-controller="TechnicOrder" asp-action="Details" asp-route-id="@order.OrderId">Відати замовлення</a></li>
+                                    <li>
+                                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addSpareModal" onclick="loadSpareForm(@order.OrderId)">
+                                            Додати деталі
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <form asp-action="EditNextReady" method="post" asp-route-id="@order.OrderId">
+                                            <button type="submit" class="dropdown-item">Готово до видачі</button>
+                                        </form>
+                                    </li>
                                 </ul>
                             </div>
                         </td>
                     </tr>
-
                 }
             </tbody>
         </table>
     </div>
 </div>
 
+<!-- Модальне вікно для додавання запасних частин -->
+<!-- Модальне вікно для додавання запасних частин -->
+<div class="modal fade" id="addSpareModal" tabindex="-1" aria-labelledby="addSpareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSpareModalLabel">Додати запасні частини</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSpareForm" method="post">
+                    <input type="hidden" name="OrderId" id="orderIdField" />
+
+                    <div class="mb-3">
+                        <label for="spareSelect" class="form-label">Виберіть запасні частини:</label>
+                        <div id="spareSelect" class="list-group">
+                            @foreach (var spare in Model.Spares)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="selectedSpareIds" value="@spare.SpareId" id="spare_@spare.SpareId">
+                                    <label class="form-check-label" for="spare_@spare.SpareId">
+                                        @spare.SpareName - @spare.SpareCost грн
+                                    </label>
+                                    <input type="number" name="SpareQuantities[@spare.SpareId]" class="form-control mt-1" placeholder="Кількість" min="1" max="@spare.SpareValue" style="width: 80px;">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                <button type="button" class="btn btn-primary" onclick="submitSpareForm()">Зберегти</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts {
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Для іконок -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script>
-        // Функція для показу/приховання форми
-        function toggleForm(formId) {
-            var form = document.getElementById(formId);
-            if (form.style.display === "none") {
-                form.style.display = "block";
-            } else {
-                form.style.display = "none";
-            }
+        function submitSpareForm() {
+            event.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("AddSpare", "Master")',
+                type: 'POST',
+                data: $('#addSpareForm').serialize(),
+                success: function (response) {
+                    alert('Запасні частини успішно додані');
+                    $('#addSpareModal').modal('hide'); // Закриваємо модальне вікно після успішного додавання
+                    // Оновлення таблиці замовлень або інші дії
+                },
+                error: function (xhr) {
+                    alert('Помилка при збереженні. Спробуйте ще раз.');
+                }
+            });
         }
 
-        // Функція для переключення видимості таблиці
+        function loadSpareForm(orderId) {
+            // Установка ID замовлення в приховане поле форми перед показом модального вікна
+            $('#orderIdField').val(orderId);
+            $('#addSpareModal').modal('show');
+        }
+
         function toggleTable(tableId) {
             var table = document.getElementById(tableId);
             var icon = document.getElementById(tableId + 'ToggleIcon');
-
             if (table.style.display === "none") {
                 table.style.display = "block";
                 icon.classList.remove('fa-chevron-down');
@@ -101,26 +157,6 @@
                 icon.classList.add('fa-chevron-down');
             }
         }
-
-
-        function searchOrders() {
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("searchOrderId");
-            filter = input.value.toLowerCase();
-            table = document.getElementById("orderTable");
-            tr = table.getElementsByTagName("tr");
-
-            for (i = 1; i < tr.length; i++) { // Починаємо з 1, бо перший рядок це заголовки
-                td = tr[i].getElementsByTagName("td")[0]; // Номер замовлення в першій колонці
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
     </script>
+
 }
