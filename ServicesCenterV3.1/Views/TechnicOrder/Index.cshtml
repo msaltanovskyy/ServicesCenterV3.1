@@ -278,6 +278,7 @@
                     <th>Майстер</th>
                     <th>Клієнт</th>
                     <th>Ціна</th>
+                    <th>Коментарь та оцінка</th>
                     <th></th>
                 </tr>
             </thead>
@@ -294,6 +295,16 @@
                         <td>@order.UserMaster?.UserName</td>
                         <td>@order.UserClient?.UserName</td>
                         <td>@order.Invoice.InvoicePrice</td>
+                        <td>
+                            @if (order.ReviewId.HasValue && order.ReviewId.Value != 0)
+                            {
+                                <span>Коментарь: @order.review.Text</span> <span>Оцінка @order.review.Rating</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Коментар відсутній</span>
+                            }
+                        </td>
                         <td class="btn-group">
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

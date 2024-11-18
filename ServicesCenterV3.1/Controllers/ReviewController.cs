@@ -38,9 +38,15 @@ namespace ServicesCenterV3._1.Controllers
                     Text = text,
                     Rating = rating
                 };
-
+ 
                 // Додаємо відгук до бази даних
                 _context.reviews.Add(review);
+                
+                await _context.SaveChangesAsync();
+
+                var orders = order.ReviewId = review.ReviewId;
+
+                _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
 
                 // Повертаємо користувача на список замовлень

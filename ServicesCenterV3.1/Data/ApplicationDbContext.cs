@@ -22,6 +22,7 @@ namespace ServicesCenterV3._1.Data
         public DbSet<Spare> spares { get; set; }
         public DbSet<SpareInvoice> spareInvoices { get; set; }
         public DbSet<Review> reviews { get; set; }
+        public DbSet<Supplier> suppliers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -64,20 +65,20 @@ namespace ServicesCenterV3._1.Data
             );
             builder.Entity<TypeTechnic>().HasData(
 
-                 new TypeTechnic { Type = "Телевізор", 
+                 new TypeTechnic { Type = "Телевізор",
                      Cost = 300 },
-                 new TypeTechnic { Type = "Холодильник", 
+                 new TypeTechnic { Type = "Холодильник",
                      Cost = 500 },
-                 new TypeTechnic { Type = "Пральна машина", 
+                 new TypeTechnic { Type = "Пральна машина",
                      Cost = 400 },
-                 new TypeTechnic { Type = "Комп'ютер", 
+                 new TypeTechnic { Type = "Комп'ютер",
                      Cost = 600 },
-                 new TypeTechnic { Type = "Мікрохвильова піч", 
+                 new TypeTechnic { Type = "Мікрохвильова піч",
                      Cost = 150 },
-                 new TypeTechnic{  Type = "Ноутбук",
+                 new TypeTechnic { Type = "Ноутбук",
                      Cost = 450
                  },
-                 new TypeTechnic{  Type = "Телефон",
+                 new TypeTechnic { Type = "Телефон",
                      Cost = 290
                  }
             );
@@ -150,6 +151,37 @@ namespace ServicesCenterV3._1.Data
                 new IdentityUserRole<string> { UserId = "13", RoleId = "3" }, // Client
                 new IdentityUserRole<string> { UserId = "14", RoleId = "4" }  // Master
             );
+
+            builder.Entity<Supplier>().HasData(
+                new Supplier
+                {
+                    SupplierId = -1, // Використовуємо від'ємне значення для уникнення колізій
+                    SupplierName = "Постачальник 1",
+                    SupplierAdress = "Київ, вул. Центральна, 1",
+                    Website = "http://supplier1.com",
+                    Email = "info@supplier1.com",
+                    Telefon = "+380441234567"
+                },
+                new Supplier
+                {
+                    SupplierId = -2, // Використовуємо від'ємне значення для уникнення колізій
+                    SupplierName = "Постачальник 2",
+                    SupplierAdress = "Львів, вул. Головна, 5",
+                    Website = "http://supplier2.com",
+                    Email = "contact@supplier2.com",
+                    Telefon = "+380322345678"
+                },
+                new Supplier
+                {
+                    SupplierId = -3, // Використовуємо від'ємне значення для уникнення колізій
+                    SupplierName = "Постачальник 3",
+                    SupplierAdress = "Одеса, вул. Приморська, 10",
+                    Website = "http://supplier3.com",
+                    Email = "support@supplier3.com",
+                    Telefon = "+380482456789"
+                }
+            );
+
 
         }
 

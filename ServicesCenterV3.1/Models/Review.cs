@@ -10,12 +10,12 @@ namespace ServicesCenterV3._1.Models
         public int ReviewId { get; set; }
 
         [Column("order_id")]
-        public int ?OrderId { get; set; }
+        public int? OrderId { get; set; } = null;
 
         [ForeignKey("OrderId")]
         public Order order { get; set; }
 
-        [Range(1, 5, ErrorMessage = "Рейтинг повинен бути від 1 до 10")]
+        [Range(1, 5, ErrorMessage = "Рейтинг повинен бути від 1 до 5")]
         [Display(Name = "Рейтинг")]
         [Column("rating")]
         public int Rating { get; set; } 

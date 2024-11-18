@@ -84,10 +84,9 @@
                         <td>@order.UserClient?.UserName</td>
                         <td>@order.Invoice.InvoicePrice</td>
                          <td>
-                            @if (order.ReviewId != 0)
+                            @if (order.ReviewId.HasValue && order.ReviewId.Value != 0)
                             {
-                                <span>Коментарь: @order.review.Text</span>
-                                <span>Оцінка @order.review.Rating</span>
+                                <span>Коментарь: @order.review.Text</span> <span>Оцінка @order.review.Rating</span>
                             }
                             else
                             {
@@ -101,7 +100,7 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" asp-controller="TechnicOrder" asp-action="Details" asp-route-id="@order.OrderId">Чек</a></li>
-                                    @if (order.Status == "Видано" && order.ReviewId == 0)
+                                    @if (order.Status == "Видано" && order.ReviewId == null)
                                     {
                                         <li><a class="dropdown-item" onclick="showReviewForm(@order.OrderId)" >Залишити відгук</a></li>
                                     }

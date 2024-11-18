@@ -66,7 +66,7 @@ namespace ServicesCenterV3._1.Models
         public Invoice Invoice { get; set; }
 
         [Column("review_id")]
-        public int ?ReviewId { get; set; }
+        public int? ReviewId { get; set; } = null;
         public Review review { get; set; }
 
 

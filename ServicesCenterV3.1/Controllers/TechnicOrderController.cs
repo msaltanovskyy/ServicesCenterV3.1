@@ -101,7 +101,7 @@ namespace ServicesCenterV3._1.Controllers
  
 
             // Фільтруємо замовлення по номеру, якщо пошуковий параметр не порожній
-            var ordersQuery = _context.Orders.Include(i => i.Invoice).AsQueryable();
+            var ordersQuery = _context.Orders.Include(i => i.Invoice).Include(r => r.review).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchOrderId))
             {
