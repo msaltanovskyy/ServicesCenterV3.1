@@ -97,7 +97,10 @@ namespace ServicesCenterV3._1.Controllers
             // Отримуємо всі техніки, типи технік, майстрів та клієнтів
             var technics = _context.Technics.Include(t => t.typeTechnic).ToList();
             var typeTechnics = _context.TypeTechnics.ToList();
-            var spares = _context.spares.ToList();
+            var spares = _context.spares.Include(ss => ss.spareStorage)
+                .ThenInclude(si => si.invoiceSupplier)
+                .ThenInclude(s => s.Supplier)
+                .ToList();
  
 
             // Фільтруємо замовлення по номеру, якщо пошуковий параметр не порожній

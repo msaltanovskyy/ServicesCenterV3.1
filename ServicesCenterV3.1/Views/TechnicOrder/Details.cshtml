@@ -1,18 +1,21 @@
 ﻿@model ServicesCenterV3._1.ViewModels.InvoiceDetailsViewModel
 
-<div class="invoice-details card shadow p-4 mb-5 bg-white rounded">
-    <h2 class="text-center mb-4">Чек № @Model.Invoice.InvoiceId</h2>
-
-    <div class="order-info card mb-4 p-3">
-        <h4 class="card-title">Інформація про замовлення</h4>
-        <p><strong>Номер замовлення:</strong> @Model.Order.OrderId</p>
-        <p><strong>Ціна замовлення:</strong> @Model.Invoice.InvoicePrice.ToString("C2")</p>
+<div class="invoice-details card shadow-lg p-5 mb-5 bg-light rounded border-0">
+    <div class="text-center mb-4">
+        <h1 class="text-uppercase fw-bold text-primary">Чек № @Model.Invoice.InvoiceId</h1>
+        <small class="text-muted">Дякуємо за ваше замовлення!</small>
     </div>
 
-    <div class="spare-parts-info card mb-4 p-3">
-        <h4 class="card-title">Використані деталі</h4>
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
+    <div class="order-info bg-white shadow-sm rounded p-4 mb-4">
+        <h4 class="fw-bold text-secondary mb-3">Інформація про замовлення</h4>
+        <p class="mb-1"><strong>Номер замовлення:</strong> <span class="text-primary">@Model.Order.OrderId</span></p>
+        <p><strong>Ціна замовлення:</strong> <span class="text-success">@Model.Invoice.InvoicePrice.ToString("C2")</span></p>
+    </div>
+
+    <div class="spare-parts-info bg-white shadow-sm rounded p-4 mb-4">
+        <h4 class="fw-bold text-secondary mb-3">Використані деталі</h4>
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-primary text-center">
                 <tr>
                     <th>Назва деталі</th>
                     <th>Ціна деталі</th>
@@ -23,14 +26,18 @@
                 {
                     <tr>
                         <td>@spare.SpareName</td>
-                        <td>@spare.SpareCost.ToString("C2")</td>
+                        <td class="text-end text-success">@spare.SpareCost.ToString("C2")</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <div class="total-cost card p-3">
-        <h4 class="text-end">Загальна вартість: <span class="text-primary">@Model.Invoice.InvoicePrice.ToString("C2")</span></h4>
+    <div class="total-cost text-end bg-white shadow-sm rounded p-4">
+        <h4 class="fw-bold">Загальна вартість: <span class="text-primary">@Model.Invoice.InvoicePrice.ToString("C2")</span></h4>
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-primary btn-lg px-4" onclick="window.print()">Роздрукувати чек</button>
     </div>
 </div>

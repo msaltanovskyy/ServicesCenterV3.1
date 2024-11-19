@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using ServicesCenterV3._1.Data;
 using ServicesCenterV3._1.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ServicesCenterV3._1.ViewModels;
+using System.Security.Claims;
 
 namespace ServicesCenterV3._1.Controllers
 {
@@ -14,11 +17,15 @@ namespace ServicesCenterV3._1.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
-        public AdminController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
         }
 
         // Метод для відображення списку користувачів та їхніх ролей
@@ -28,6 +35,7 @@ namespace ServicesCenterV3._1.Controllers
             var users = _userManager.Users.ToList();
             var model = new List<UserRolesViewModel>();
             ViewBag.Roles = _roleManager.Roles.ToList();
+            ViewBag.Suppliers = _context.suppliers.ToList();
 
             foreach (var user in users)
             {
@@ -147,6 +155,138 @@ namespace ServicesCenterV3._1.Controllers
 
             return Ok("Дані користувача оновлено успішно.");
         }
+
+        [HttpPost]
+        public IActionResult SupplierCreate(string SupplierAdress,
+            string Website,string SupplierName,string Email,string Telefon)
+        {
+            var supplier = new Supplier
+            {
+                Email = Email,
+                Telefon = Telefon,
+                SupplierAdress = SupplierAdress,
+                SupplierName = SupplierName,
+                Website = Website
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.suppliers.Add(supplier);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            else if(supplier == null)
+            {
+                ModelState.TryAddModelError("", "Помилка в додавані");
+                return View();
+            }
+            return View();
+            
+        }
+
+
+        [HttpGet("Admin/InvoiceDelivery/{supplierid}")]
+        public async Task<IActionResult> InvoiceDelivery(int supplierid)
+        {
+            var supplier = (await _context.suppliers.FindAsync(supplierid)).SupplierId;
+
+            if(supplierid == null)
+            {
+                ModelState.TryAddModelError("", "Постачальник не знайдений");
+            }
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) {
+
+                userId = "11";
+            }
+
+            var invoice_delivery = new InvoiceSupplier
+            {
+                SupplierId = supplierid,
+                UserId = userId,
+                DateCreate = DateTime.UtcNow,
+            };
+ 
+            if (ModelState.IsValid)
+            {
+                await _context.invoicesSupplier.AddAsync(invoice_delivery);
+                await _context.SaveChangesAsync();
+                int id_delivery = invoice_delivery.InvoiceSupplierId;
+                return RedirectToAction("AddSpareStorages", new { id_delivery });
+            }
+
+            return View(nameof(Index));
+        }
+
+        [HttpGet("Admin/AddSpareStorages/{id_delivery}")]
+        public IActionResult AddSpareStorages(int id_delivery)
+        {
+            if (id_delivery == 0)
+            {
+                // Логика обработки id_delivery = 0
+                // Например, можно перенаправить на другую страницу или вернуть ошибку
+                ModelState.AddModelError("", "Невірний ідентифікатор інвойсу.");
+                return RedirectToAction("Index");
+            }
+
+            var spareStorage = new SpareStorageViewModel
+            {
+                InvoiceSupplierId = id_delivery,
+                SpareStorages = new List<SpareStorage> { new SpareStorage() }  // Инициализируем пустым элементом для первого ввода
+            };
+            return View(spareStorage);
+        }
+        [HttpPost("Admin/AddSpareStorages/{id_delivery}")]
+        public async Task<IActionResult> AddSpareStorages(SpareStorageViewModel sapreStorage, int id_delivery)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                // Перевірка, чи інвойс (id_delivery) існує
+                var invoice = await _context.invoicesSupplier.FindAsync(id_delivery);
+                if (invoice == null)
+                {
+                    ModelState.AddModelError("", "Інвойс не знайдений.");
+                    return View(sapreStorage); // Повертаємо форму з повідомленням про помилку
+                }
+         
+                foreach (var spareStorage in sapreStorage.SpareStorages)
+                {
+                    spareStorage.InvoiceSupplierId = id_delivery; // Призначаємо InvoiceSupplierId
+                    _context.spareStorages.Add(spareStorage); // Додаємо кожну запчастину до бази
+
+                    await _context.SaveChangesAsync();
+
+                    var spare = new Spare
+                    {
+                        SpareName = spareStorage.SapreName,
+                        SpareCost = (double)spareStorage.Price,
+                        SpareValue = spareStorage.Quantity,
+                        SpareStorageId = spareStorage.SpareStorageId,
+                    };
+
+                    _context.spares.Add(spare);
+                    await _context.SaveChangesAsync(); // Зберігаємо зміни в базі
+                }
+               
+                try
+                {
+                    
+                    return RedirectToAction(nameof(Index)); // Перехід на потрібну сторінку після збереження
+                }
+                catch (Exception ex)
+                {
+                    // Логування помилки та повернення на форму з повідомленням про помилку
+                    ModelState.AddModelError("", $"Сталася помилка при збереженні: {ex.Message}");
+                }
+            }
+            return View(sapreStorage); // Якщо модель не валідна, повертаємо на форму
+        }
+
+
+
 
         // Модель для отримання даних з JavaScript-функції
         public class UpdateUserRoleModel

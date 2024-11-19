@@ -1,0 +1,95 @@
+﻿@using ServicesCenterV3._1.ViewModels
+@model SpareStorageViewModel
+
+@{
+    ViewData["Title"] = "Додавання запчастин";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="AddSpareStorages" method="post">
+    <input type="hidden" asp-for="InvoiceSupplierId" />
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="spareTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Назва запчастини</th>
+                    <th>Кількість</th>
+                    <th>Ціна</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SpareStorages != null && Model.SpareStorages.Any())
+                {
+                    @for (var i = 0; i < Model.SpareStorages.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" name="SpareStorages[@i].SapreName" class="form-control" value="@Model.SpareStorages[i].SapreName" required />
+                            </td>
+                            <td>
+                                <input type="number" name="SpareStorages[@i].Quantity" class="form-control" value="@Model.SpareStorages[i].Quantity" required />
+                            </td>
+                            <td>
+                                <input type="number" name="SpareStorages[@i].Price" class="form-control" value="@Model.SpareStorages[i].Price" required />
+                            </td>
+                            <td>
+                                @if (i > 0)
+                                {
+                                    <button type="button" class="btn btn-danger removeRow" title="Видалити цей рядок">
+                                        <i class="bi bi-x-circle"></i> Видалити
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td><input type="text" name="SpareStorages[0].SapreName" class="form-control" required /></td>
+                        <td><input type="number" name="SpareStorages[0].Quantity" class="form-control" required /></td>
+                        <td><input type="number" name="SpareStorages[0].Price" class="form-control" required /></td>
+                        <td><button type="button" class="btn btn-danger removeRow" title="Видалити цей рядок"><i class="bi bi-x-circle"></i> Видалити</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <button type="button" id="addRow" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Додати ще одну запчастину
+        </button>
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-save"></i> Зберегти запчастини
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var rowIndex = @Model.SpareStorages.Count;
+
+            // Добавление новой строки
+            $("#addRow").click(function () {
+                var newRow = `<tr>
+                                    <td><input type="text" name="SpareStorages[${rowIndex}].SapreName" class="form-control" required /></td>
+                                    <td><input type="number" name="SpareStorages[${rowIndex}].Quantity" class="form-control" required /></td>
+                                    <td><input type="number" name="SpareStorages[${rowIndex}].Price" class="form-control" required /></td>
+                                    <td><button type="button" class="btn btn-danger removeRow" title="Видалити цей рядок"><i class="bi bi-x-circle"></i> Видалити</button></td>
+                                </tr>`;
+                $("#spareTable tbody").append(newRow);
+                rowIndex++;
+            });
+
+            // Удаление строки
+            $(document).on('click', '.removeRow', function () {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+}

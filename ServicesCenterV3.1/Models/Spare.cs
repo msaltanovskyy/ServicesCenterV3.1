@@ -21,6 +21,12 @@ namespace ServicesCenterV3._1.Models
         [Display(Name = "Кількість деталей")]
         public int SpareValue { get; set; }
 
+        [Column("spare_palace_storage_id")]
+        [Display(Name="Місце на складі")]
+        public int SpareStorageId { get; set; }
+        [ForeignKey(nameof(SpareStorageId))]
+        public SpareStorage spareStorage { get; set; }
+
 
     }
 }

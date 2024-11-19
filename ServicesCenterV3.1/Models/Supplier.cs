@@ -38,6 +38,6 @@ namespace ServicesCenterV3._1.Models
         ///<summary>
         ///Ключі звязку
         ///</summary>   
-
+        public IEnumerable<InvoiceSupplier> invoiceSuppliers { get; set; }
     }
 }

@@ -11,73 +11,44 @@
 
 
 <div class="container mt-5">
-    <div class="accordion" id="chartAccordion">
-
+    <h1 class="text-center mb-5 text-primary">Статистика</h1>
+    <div class="accordion shadow" id="chartAccordion">
         <!-- Діаграма 1: Статистика замовлень за статусами -->
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOrder">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder" aria-expanded="true" aria-controls="collapseOrder">
-                    Статистика замовлень за статусами
+                    <strong>Статистика замовлень за статусами</strong>
                 </button>
             </h2>
             <div id="collapseOrder" class="accordion-collapse collapse show" aria-labelledby="headingOrder" data-bs-parent="#chartAccordion">
-                <div class="accordion-body">
+                <div class="accordion-body bg-light">
                     <canvas id="orderChart"></canvas>
                 </div>
             </div>
         </div>
-
-        <!-- Діаграма 2: Розподіл техніки за типами -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTechnic">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTechnic" aria-expanded="false" aria-controls="collapseTechnic">
-                    Розподіл техніки за типами
-                </button>
-            </h2>
-            <div id="collapseTechnic" class="accordion-collapse collapse" aria-labelledby="headingTechnic" data-bs-parent="#chartAccordion">
-                <div class="accordion-body">
-                    <canvas id="technicTypeChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Діаграма 3: Розподіл запчастин за кількістю -->
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingSpare">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpare" aria-expanded="false" aria-controls="collapseSpare">
-                    Розподіл запчастин за кількістю
-                </button>
-            </h2>
-            <div id="collapseSpare" class="accordion-collapse collapse" aria-labelledby="headingSpare" data-bs-parent="#chartAccordion">
-                <div class="accordion-body">
-                    <canvas id="sparePartChart"></canvas>
-                </div>
-            </div>
-        </div>
-
         <!-- Діаграма 4: Статистика замовлень за майстрами -->
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingMaster">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMaster" aria-expanded="false" aria-controls="collapseMaster">
-                    Статистика замовлень за майстрами
+                    <strong>Статистика замовлень за майстрами</strong>
                 </button>
             </h2>
             <div id="collapseMaster" class="accordion-collapse collapse" aria-labelledby="headingMaster" data-bs-parent="#chartAccordion">
-                <div class="accordion-body">
+                <div class="accordion-body bg-light">
                     <canvas id="masterChart"></canvas>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
 
+
 <!-- Кнопка для відкриття форми додавання техніки -->
-<div class="text-center mb-4">
+<div class="text-center mb-4" style="margin-top: 20px">
     <button class="btn btn-success" onclick="toggleForm('technicForm')">Додати техніку</button>
     <button class="btn btn-info" onclick="toggleForm('orderForm')">Створити замовлення</button>
-    <button class="btn btn-warning" onclick="toggleForm('spareForm')">Додати запчастину</button> <!-- Кнопка для запчастини -->
+    <!-- <button class="btn btn-warning" onclick="toggleForm('spareForm')">Додати запчастину</button> -->
 </div>
 
 <div class="card shadow-sm mb-4" id="orderForm" style="display: none;">
@@ -233,6 +204,8 @@
                     <th>Назва запчастини</th>
                     <th>Ціна</th>
                     <th>Кількість</th>
+                    <th>Постачальник</th>
+                    <th>Місце на складі</th>
                     <th></th>
                 </tr>
             </thead>
@@ -243,6 +216,8 @@
                         <td>@spare.SpareName</td>
                         <td>@spare.SpareCost.ToString("C2")</td>
                         <td>@spare.SpareValue</td>
+                        <td>@spare.spareStorage.invoiceSupplier.Supplier.SupplierName</td>
+                        <td>@spare.SpareStorageId</td>
                     </tr>
                 }
             </tbody>

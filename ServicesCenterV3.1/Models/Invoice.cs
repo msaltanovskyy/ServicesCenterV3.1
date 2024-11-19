@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServicesCenterV3._1.Models
 {
-    [Table("invoice")]
+    [Table("invoice_order")]
     public class Invoice
     {
         [Column("invoice_id")]

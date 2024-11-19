@@ -23,6 +23,9 @@ namespace ServicesCenterV3._1.Data
         public DbSet<SpareInvoice> spareInvoices { get; set; }
         public DbSet<Review> reviews { get; set; }
         public DbSet<Supplier> suppliers { get; set; }
+        public DbSet<SpareStorage> spareStorages { get; set; }
+
+        public DbSet<InvoiceSupplier> invoicesSupplier { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

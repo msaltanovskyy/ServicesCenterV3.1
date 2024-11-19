@@ -12,6 +12,8 @@ namespace ServicesCenterV3._1.Models
         public IList<string> Roles { get; set; }
 
         public bool IsLockedOut { get; set; } // Додаємо поле для статусу блокування
+
+        public List<Supplier> suppliers { get; set; }
     }
 
 }

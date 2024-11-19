@@ -4,7 +4,7 @@
 @inject UserManager<User> UserManager
 
 @{
-    ViewData["Title"] = "Користувачі";
+    ViewData["Title"] = "Користувачі та постачальники";
 }
 
 <h2 class="text-primary mb-4">Керування користувачами</h2>
@@ -126,9 +126,84 @@
         </div>
     </div>
 </div>
+<div class="card mb-4" id="supplierForm" style="display: none;">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Додати постачальника</h5> 
+        <div class="card-body"> 
+            <form asp-action="SupplierCreate" method="post">
+                @Html.AntiForgeryToken() 
+                <div class="form-group mb-3"> 
+                    <label for="SupplierName">Назва компанії</label> 
+                    <input type="text" id="SupplierName" name="SupplierName" class="form-control" required /> 
+                </div> <div class="form-group mb-3"> 
+                    <label for="SupplierAdress">Адреса</label> 
+                    <input type="text" id="SupplierAdress" name="SupplierAdress" class="form-control" required /> 
+                </div> 
+                <div class="form-group mb-3">
+                    <label for="Website">Веб-сайт</label> 
+                    <input type="url" id="Website" name="Website" class="form-control" required /> 
+                </div> 
+                <div class="form-group mb-3"> <label for="Email">Email</label> 
+                    <input type="email" id="Email" name="Email" class="form-control" required /> </div>
+                    <div class="form-group mb-3"> 
+                        <label for="Telefon">Телефон</label> 
+                        <input type="tel" id="Telefon" name="Telefon" class="form-control" required /> 
+                    </div> 
+                    <div class="mb-3 d-flex justify-content-between"> 
+                        <button type="submit" class="btn btn-primary">Додати</button> 
+                        <button type="button" class="btn btn-secondary" onclick="hideSupplierForm()">Скасувати</button> 
+                    </div> 
+            </form>
+        </div>
+    </div>
+</div>
+<h3 class="text-secondary mb-4 mt-5">Постачальники</h3>
+<div class="d-flex justify-content-end mb-4"> 
+    <a href="#" class="btn btn-success" onclick="showSupplierForm()"> 
+        <i class="bi bi-plus-lg me-1"></i> Додати постачальника </a> 
+</div>
+<table class="table table-hover table-striped align-middle border shadow-sm rounded"> 
+    <thead class="table-dark"> 
+        <tr> <th>Назва компанії</th> 
+            <th>Адреса</th> 
+            <th>Веб-сайт</th> 
+            <th>Email</th> 
+            <th>Телефон</th> 
+            <th>Дії</th> 
+        </tr> 
+        </thead> 
+        <tbody id="supplierTable"> 
+            @foreach (var supplier in ViewBag.Suppliers)
+        {
+            <tr class="supplier-row" data-supplier-id="@supplier.SupplierId"> 
+                <td class="fw-bold text-secondary">@supplier.SupplierName</td>
+                <td>@supplier.SupplierAdress</td>
+                <td><a href="@supplier.Website" target="_blank">@supplier.Website</a></td>
+                <td>@supplier.Email</td> 
+                <td>@supplier.Telefon</td>
+                <td class="text-center"> 
+                    <div class="d-flex justify-content-center">
+                        <a class="btn btn-sm btn-outline-success" asp-action="InvoiceDelivery" asp-route-supplierid="@supplier.SupplierId">Замовити деталі</a>
+                    </div>
+                </td>
+            </tr>
+        } </tbody> </table>
 
 
 <script>
+
+        // Функція для показу форми додавання постачальника
+        function showSupplierForm() {
+            var form = document.getElementById("supplierForm");
+        form.style.display = "block";
+        }
+
+        // Функція для приховування форми додавання постачальника
+        function hideSupplierForm() {
+            var form = document.getElementById("supplierForm");
+        form.style.display = "none";
+        }
+
     function updateUserRole(userId, roleName, isSelected) {
         fetch('/Admin/UpdateUserRole', {
             method: 'POST',

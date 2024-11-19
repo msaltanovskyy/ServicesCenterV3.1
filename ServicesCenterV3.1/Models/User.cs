@@ -31,6 +31,7 @@ namespace ServicesCenterV3._1.Models
         [DataType(DataType.Date)]
         public DateOnly DataBith { get; set; }
 
-        
+        public IEnumerable<InvoiceSupplier> invoiceSuppliers { get; set; }
+
     }
 }
